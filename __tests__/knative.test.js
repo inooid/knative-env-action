@@ -38,7 +38,7 @@ describe('updateContainer()', () => {
       }
     }
 
-    expect(() => updateContainer(manifest, 'foo', () => {})).toThrowError(
+    expect(() => updateContainer(manifest, 'foo', () => {})).toThrow(
       `Could not find 'foo' in 'spec.template.spec.containers'`
     )
   })

@@ -96,12 +96,12 @@ describe('action', () => {
         'MULTI_PEM_DOUBLE_QUOTED'
       ]
 
-      expectedEnvVars.forEach(envVar => {
+      for (const envVar of expectedEnvVars) {
         expect(container.env).toContainEqual({
           name: envVar,
           value: expect.any(String)
         })
-      })
+      }
     })
   })
 
@@ -176,12 +176,12 @@ describe('action', () => {
         'MULTI_PEM_DOUBLE_QUOTED'
       ]
 
-      expectedEnvVars.forEach(envVar => {
+      for (const envVar of expectedEnvVars) {
         expect(container.env).toContainEqual({
           name: envVar,
           value: expect.any(String)
         })
-      })
+      }
     })
   })
 
@@ -256,7 +256,7 @@ describe('action', () => {
 
   const requiredFields = ['input', 'target', 'env_file', 'output']
 
-  requiredFields.forEach(field => {
+  for (const field of requiredFields) {
     it(`fails if no '${field}' is provided`, async () => {
       getInputMock.mockImplementation(name => {
         switch (name) {
@@ -275,5 +275,5 @@ describe('action', () => {
         `Input required and not supplied: ${field}`
       )
     })
-  })
+  }
 })

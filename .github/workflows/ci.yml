@@ -57,8 +57,14 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 1000
+          input: ./__tests__/__mocks__/service.yaml
+          target: my-test-app
+          env_file: ./__tests__/__mocks__/test.env
+          output: /tmp/service.yaml
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+      - name: Test if new manifest exists
+        run: |
+          if [ ! -f /tmp/service.yaml ]; then
+            echo "File not found!"
+            exit 1
+          fi

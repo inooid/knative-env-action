@@ -1,18 +1,24 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'knative-env-file-action'
+description: 'Injects a given .env file into your knative declaration'
+author: 'inooid'
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  input:
+    description: 'The input knative yaml file'
     required: true
-    default: '1000'
 
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+  target:
+    description: 'The container name that will receive the env var'
+    required: true
+
+  env_file:
+    description: 'The .env file'
+    required: true
+
+  output:
+    description: 'The output file path'
+    required: true
 
 runs:
   using: node20

@@ -1,0 +1,37 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: my-test-job
+  labels:
+    cloud.googleapis.com/location: ${APP_LOCATION}
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/network-interfaces: '[{"network":"projects/my-test-project/global/networks/my-test-network","subnetwork":"projects/my-test-project/regions/us-east1/subnetworks/us-east1-my-test-network"}]'
+        run.googleapis.com/vpc-access-egress: private-ranges-only
+    spec:
+      taskCount: 1
+      template:
+        spec:
+          serviceAccountName: ${APP_SERVICE_ACCOUNT}
+          containers:
+            - name: my-test-job
+              image: ${IMAGE}
+              command: ['php', 'artisan', 'schedule:run']
+              resources:
+                limits:
+                  cpu: 1000m
+                  memory: 512Mi
+              env:
+                - name: MY_SUPER_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: latest
+                      name: MY_SUPER_SECRET
+
+                - name: MY_APP_SPECIFIC_VARIABLE
+                  value: foo
+          maxRetries: 3
+          timeoutSeconds: '600'

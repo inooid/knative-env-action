@@ -1,0 +1,31 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: my-test-app
+  labels:
+    cloud.googleapis.com/location: ${APP_LOCATION}
+  annotations:
+    run.googleapis.com/ingress: internal-and-cloud-load-balancing
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/network-interfaces: '[{"network":"projects/my-test-project/global/networks/my-test-network","subnetwork":"projects/my-test-project/regions/us-east1/subnetworks/us-east1-my-test-network"}]'
+        run.googleapis.com/vpc-access-egress: all-traffic
+    spec:
+      serviceAccountName: ${APP_SERVICE_ACCOUNT}
+      containers:
+        - name: my-test-app
+          image: ${IMAGE}
+          ports:
+            - name: http1
+              containerPort: 8080
+          env:
+            - name: MY_SUPER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: MY_SUPER_SECRET
+
+            - name: MY_APP_SPECIFIC_VARIABLE
+              value: foo

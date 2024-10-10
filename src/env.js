@@ -18,7 +18,7 @@ async function parse(filePath) {
  * - Any fallbacks ${NOTSET:=$BAR}
  * - Escaping using $$
  * @param {string} input
- * @param {object} env
+ * @param {object} [env]
  * @returns {string}
  */
 function envsubst(input, env = process.env) {

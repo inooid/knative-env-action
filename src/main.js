@@ -27,6 +27,9 @@ async function run() {
     core.info(`Writing updated manifest to ${outputFile}`)
 
     await knative.writeManifest(outputFile, updatedManifest)
+
+    // Set outputs for other workflow steps to use
+    core.setOutput('output', outputFile)
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)

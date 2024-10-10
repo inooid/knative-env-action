@@ -13,6 +13,7 @@ manage. This GitHub action should help relieve some of the pains by:
 - [Customizing](#customizing)
   - [inputs](#inputs)
   - [outputs](#outputs)
+- [Contributing](#contributing)
 
 ## Usage
 
@@ -272,3 +273,8 @@ The following inputs can be used as `step.with` keys:
 ### outputs
 
 There are currently no outputs available
+
+## Contributing
+
+Want to contribute? Awesome! You can find information about contributing to this
+project in the [CONTRIBUTING.md](/.github/CONTRIBUTING.md)

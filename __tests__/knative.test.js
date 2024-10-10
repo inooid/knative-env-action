@@ -9,7 +9,7 @@ describe('readManifest()', () => {
 
   const readFileMock = jest.spyOn(fs, 'readFile').mockImplementation()
 
-  it('replaces the env vars and parses YAML', () => {
+  it('replaces the env vars and parses YAML', async () => {
     const fakeEnv = {
       MY_NAME: 'my-test-app',
       MY_LOCATION_ENV: 'eu-west4'
@@ -31,7 +31,7 @@ spec:
 `
     })
 
-    expect(readManifest('my-file.yaml', fakeEnv)).resolves.toEqual({
+    expect(await readManifest('my-file.yaml', fakeEnv)).toEqual({
       apiVersion: 'serving.knative.dev/v1',
       kind: 'Service',
       metadata: {
@@ -140,7 +140,7 @@ describe('updateContainer()', () => {
     })
   })
 
-  describe('kind: Service', () => {
+  describe('kind: Job', () => {
     it('throws when there are no containers', () => {
       const manifest = {
         apiVersion: 'run.googleapis.com/v1',

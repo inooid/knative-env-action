@@ -1,4 +1,4 @@
-name: 'knative-env-file-action'
+name: 'knative-env-action'
 description: 'Injects a given .env file into your knative declaration'
 author: 'inooid'
 

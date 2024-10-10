@@ -28,22 +28,11 @@ describe('updateContainer()', () => {
         name: 'my-app',
         labels: {
           'cloud.googleapis.com/location': 'us-east1'
-        },
-        annotations: {
-          'run.googleapis.com/ingress': 'internal-and-cloud-load-balancing'
         }
       },
       spec: {
         template: {
-          metadata: {
-            annotations: {
-              'run.googleapis.com/network-interfaces':
-                '[{"network":"projects/my-test-project/global/networks/my-test-network","subnetwork":"projects/my-test-project/regions/us-east1/subnetworks/us-east1-my-test-network"}]',
-              'run.googleapis.com/vpc-access-egress': 'all-traffic'
-            }
-          },
           spec: {
-            serviceAccountName: 'service-account@example.org',
             containers: [
               {
                 name: 'my-app',
@@ -69,22 +58,11 @@ describe('updateContainer()', () => {
         name: 'my-app',
         labels: {
           'cloud.googleapis.com/location': 'us-east1'
-        },
-        annotations: {
-          'run.googleapis.com/ingress': 'internal-and-cloud-load-balancing'
         }
       },
       spec: {
         template: {
-          metadata: {
-            annotations: {
-              'run.googleapis.com/network-interfaces':
-                '[{"network":"projects/my-test-project/global/networks/my-test-network","subnetwork":"projects/my-test-project/regions/us-east1/subnetworks/us-east1-my-test-network"}]',
-              'run.googleapis.com/vpc-access-egress': 'all-traffic'
-            }
-          },
           spec: {
-            serviceAccountName: 'service-account@example.org',
             containers: [
               {
                 name: 'my-app',

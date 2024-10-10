@@ -6,6 +6,14 @@ manage. This GitHub action should help relieve some of the pains by:
 - Easily managing env variables using `.env` files
 - Substitutes environment variables used within the manifest
 
+---
+
+- [Usage](#usage)
+- [Examples](#examples)
+- [Customizing](#customizing)
+  - [inputs](#inputs)
+  - [outputs](#outputs)
+
 ## Usage
 
 ```yml
@@ -247,3 +255,20 @@ jobs:
           region: ${{ vars.APP_LOCATION }}
           metadata: /tmp/production-app.yaml
 ```
+
+## Customizing
+
+### inputs
+
+The following inputs can be used as `step.with` keys:
+
+| Name       | Type     | Required? | Description                                                               |
+| ---------- | -------- | --------- | ------------------------------------------------------------------------- |
+| `input`    | `String` | Yes       | The input path of the knative yaml file (e.g. `./app.yaml`)               |
+| `target`   | `String` | Yes       | The name of the target container                                          |
+| `env_file` | `String` | Yes       | The path to the `.env` file                                               |
+| `output`   | `String` | Yes       | The output path of the generated knative yaml file (e.g. `/tmp/app.yaml`) |
+
+### outputs
+
+There are currently no outputs available

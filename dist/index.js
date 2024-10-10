@@ -3113,7 +3113,7 @@ async function parse(filePath) {
  * - Any fallbacks ${NOTSET:=$BAR}
  * - Escaping using $$
  * @param {string} input
- * @param {object} env
+ * @param {object} [env]
  * @returns {string}
  */
 function envsubst(input, env = process.env) {
@@ -3155,12 +3155,13 @@ const { envsubst } = __nccwpck_require__(4521)
 /**
  * Reads the given knative manifest and replaces the given env vars.
  * @param {string} filePath
+ * @param {object} [env]
  * @returns {object}
  */
-async function readManifest(filePath) {
+async function readManifest(filePath, env) {
   const file = await fs.readFile(filePath, { encoding: 'utf8' })
 
-  return YAML.parse(envsubst(file))
+  return YAML.parse(envsubst(file, env))
 }
 
 /**

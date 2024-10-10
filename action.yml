@@ -14,10 +14,14 @@ inputs:
 
   output:
     description: 'The output file path'
-    required: true
 
   container_name:
     description: 'The container name that will receive the env var'
+
+# Define your outputs here.
+outputs:
+  output:
+    description: 'The newly generated knative yaml file'
 
 runs:
   using: node20

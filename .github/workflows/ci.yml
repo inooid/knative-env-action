@@ -65,16 +65,15 @@ jobs:
         with:
           input: ./__tests__/__mocks__/service.yaml
           env_file: ./__tests__/__mocks__/test.env
-          output: /tmp/service.yaml
 
       - name: Test if new manifest exists
         run: |
-          if [ ! -f /tmp/service.yaml ]; then
+          if [ ! -f ${{ steps.test-action.outputs.output }} ]; then
             echo "File not found!"
             exit 1
           fi
 
-          cat /tmp/service.yaml
+          cat ${{ steps.test-action.outputs.output }}
 
   test-job-action:
     name: GitHub Actions Test with kind Job
@@ -97,13 +96,12 @@ jobs:
         with:
           input: ./__tests__/__mocks__/job.yaml
           env_file: ./__tests__/__mocks__/test.env
-          output: /tmp/job.yaml
 
       - name: Test if new manifest exists
         run: |
-          if [ ! -f /tmp/job.yaml ]; then
+          if [ ! -f ${{ steps.test-action.outputs.output }} ]; then
             echo "File not found!"
             exit 1
           fi
 
-          cat /tmp/job.yaml
+          cat ${{ steps.test-action.outputs.output }}

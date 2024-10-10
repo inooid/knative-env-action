@@ -3296,9 +3296,20 @@ module.exports = {
 /***/ 1713:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+const os = __nccwpck_require__(612)
+const path = __nccwpck_require__(9411)
 const core = __nccwpck_require__(2186)
 const knative = __nccwpck_require__(7202)
 const environment = __nccwpck_require__(4521)
+
+/**
+ * @param {string} outputFile
+ * @param {string} inputFile
+ * @returns {string}
+ */
+function generateOutputFilePath(inputFile) {
+  return path.join(os.tmpdir(), path.basename(inputFile))
+}
 
 /**
  * The main function for the action.
@@ -3308,7 +3319,8 @@ async function run() {
   try {
     const inputFile = core.getInput('input', { required: true })
     const envFile = core.getInput('env_file', { required: true })
-    const outputFile = core.getInput('output', { required: true })
+    const outputFile =
+      core.getInput('output') || generateOutputFilePath(inputFile)
     const containerName = core.getInput('container_name')
 
     const [manifest, env] = await Promise.all([
@@ -3325,6 +3337,9 @@ async function run() {
     core.info(`Writing updated manifest to ${outputFile}`)
 
     await knative.writeManifest(outputFile, updatedManifest)
+
+    // Set outputs for other workflow steps to use
+    core.setOutput('output', outputFile)
   } catch (error) {
     // Fail the workflow run if an error occurs
     core.setFailed(error.message)
@@ -3399,6 +3414,22 @@ module.exports = require("net");
 
 "use strict";
 module.exports = require("node:fs/promises");
+
+/***/ }),
+
+/***/ 612:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:os");
+
+/***/ }),
+
+/***/ 9411:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:path");
 
 /***/ }),
 

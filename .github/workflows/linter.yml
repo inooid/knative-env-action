@@ -48,4 +48,5 @@ jobs:
           VALIDATE_JSCPD: false
           VALIDATE_CHECKOV: false
           VALIDATE_ENV: false
+          VALIDATE_MARKDOWN: false
           VALIDATE_KUBERNETES_KUBECONFORM: false

@@ -33,8 +33,6 @@ describe('action', () => {
         switch (name) {
           case 'input':
             return MOCKS.serviceManifest
-          case 'target':
-            return 'my-test-app'
           case 'env_file':
             return MOCKS.envFile
           case 'output':
@@ -112,8 +110,6 @@ describe('action', () => {
         switch (name) {
           case 'input':
             return MOCKS.jobManifest
-          case 'target':
-            return 'my-test-job'
           case 'env_file':
             return MOCKS.envFile
           case 'output':

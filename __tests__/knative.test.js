@@ -1,6 +1,10 @@
 const fs = require('node:fs/promises')
 const { expect } = require('@jest/globals')
-const { readManifest, updateContainer } = require('../src/knative')
+const {
+  readManifest,
+  updateContainer,
+  addEnvToContainer
+} = require('../src/knative')
 
 describe('readManifest()', () => {
   beforeEach(() => {
@@ -53,6 +57,60 @@ spec:
         }
       }
     })
+  })
+})
+
+describe('addEnvToContainer()', () => {
+  it('keeps existing env intact', () => {
+    const container = {
+      name: 'my-test-app',
+      image: 'my-test-image',
+      env: [
+        { name: 'MY_TEST_ENV', value: 'foo' },
+        {
+          name: 'MY_SUPER_SECRET',
+          valueFrom: {
+            secretKeyRef: {
+              key: 'latest',
+              name: 'MY_SUPER_SECRET'
+            }
+          }
+        }
+      ]
+    }
+
+    const envVars = {
+      FOO: 'bar'
+    }
+
+    const result = addEnvToContainer(container, envVars)
+
+    expect(result.env).toContainEqual({ name: 'MY_TEST_ENV', value: 'foo' })
+    expect(result.env).toContainEqual({
+      name: 'MY_SUPER_SECRET',
+      valueFrom: {
+        secretKeyRef: {
+          key: 'latest',
+          name: 'MY_SUPER_SECRET'
+        }
+      }
+    })
+    expect(result.env).toContainEqual({ name: 'FOO', value: 'bar' })
+  })
+
+  it('handles non existant env', () => {
+    const container = {
+      name: 'my-test-app',
+      image: 'my-test-image'
+    }
+
+    const envVars = {
+      FOO: 'bar'
+    }
+
+    const result = addEnvToContainer(container, envVars)
+
+    expect(result.env).toContainEqual({ name: 'FOO', value: 'bar' })
   })
 })
 

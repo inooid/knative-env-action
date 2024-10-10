@@ -39,18 +39,18 @@ jobs:
       # ... all your google auth steps here
 
       - name: Generate service declaration
+        id: app_manifest
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./deploy/production-app.yaml
           env_file: ./deploy/production.env
-          output: /tmp/production-app.yaml
 
       # Example of actually deploying the cloud run app
       - name: Deploy app to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: us-east1
-          metadata: /tmp/production-app.yaml
+          metadata: ${{ steps.app_manifest.outputs.output }}
 ```
 
 ## Examples
@@ -149,32 +149,32 @@ jobs:
       # ... all your google auth steps here
 
       - name: Generate app declaration
+        id: app_manifest
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./app.yaml
           env_file: ./production.env
-          output: /tmp/production-app.yaml
 
       # Example of actually deploying the cloud run app
       - name: Deploy app to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: us-east1
-          metadata: /tmp/production-app.yaml
+          metadata: ${{ steps.app_manifest.outputs.output }}
 
       - name: Generate job declaration
+        id: scheduler_manifest
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./scheduler.yaml
           env_file: ./production.env
-          output: /tmp/production-scheduler.yaml
 
       # Example of actually deploying the cloud run app
       - name: Deploy app to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: us-east1
-          metadata: /tmp/production-scheduler.yaml
+          metadata: ${{ steps.scheduler_manifest.outputs.output }}
 ```
 
 ### Using env var substitution
@@ -223,6 +223,7 @@ jobs:
       # ... all your google auth steps here
 
       - name: Generate app declaration
+        id: app-manifest
         uses: inooid/knative-env-action@0.1.0
         env:
           APP_NAME: ${{ vars.APP_NAME }}
@@ -232,14 +233,13 @@ jobs:
         with:
           input: ./app.yaml
           env_file: ./production.env
-          output: /tmp/production-app.yaml
 
       # Example of actually deploying the cloud run app
       - name: Deploy app to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: ${{ vars.APP_LOCATION }}
-          metadata: /tmp/production-app.yaml
+          metadata: ${{ steps.app_manifest.outputs.output }}
 ```
 
 ### Multi container apps
@@ -296,19 +296,19 @@ jobs:
       # ... all your google auth steps here
 
       - name: Generate app declaration
+        id: app_manifest
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./app.yaml
           container_name: my-test-app
           env_file: ./production.env
-          output: /tmp/production-app.yaml
 
       # Example of actually deploying the cloud run app
       - name: Deploy app to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: ${{ vars.APP_LOCATION }}
-          metadata: /tmp/production-app.yaml
+          metadata: ${{ steps.app_manifest.outputs.output }}
 ```
 
 ## Customizing
@@ -321,7 +321,7 @@ The following inputs can be used as `step.with` keys:
 | ---------------- | -------- | --------- | ------------------------------------------------------------------------- |
 | `input`          | `String` | Yes       | The input path of the knative YAML file (e.g. `./app.yaml`)               |
 | `env_file`       | `String` | Yes       | The path to the `.env` file                                               |
-| `output`         | `String` | Yes       | The output path of the generated knative YAML file (e.g. `/tmp/app.yaml`) |
+| `output`         | `String` | No        | The output path of the generated knative YAML file (e.g. `/tmp/app.yaml`) |
 | `container_name` | `String` | No        | The name of the target container, by default we take the first container  |
 
 ### outputs

@@ -58,6 +58,17 @@ spec:
 
 describe('updateContainer()', () => {
   describe('kind: Service', () => {
+    it('throws when incomplete manifest', () => {
+      const manifest = {
+        apiVersion: 'serving.knative.dev/v1',
+        kind: 'Service'
+      }
+
+      expect(() => updateContainer(manifest, 'foo', () => {})).toThrow(
+        `No containers found in 'spec.template.spec.containers'`
+      )
+    })
+
     it('throws when there are no containers', () => {
       const manifest = {
         apiVersion: 'serving.knative.dev/v1',
@@ -141,6 +152,17 @@ describe('updateContainer()', () => {
   })
 
   describe('kind: Job', () => {
+    it('throws when incomplete manifest', () => {
+      const manifest = {
+        apiVersion: 'run.googleapis.com/v1',
+        kind: 'Job'
+      }
+
+      expect(() => updateContainer(manifest, 'foo', () => {})).toThrow(
+        `No containers found in 'spec.template.spec.template.spec.containers'`
+      )
+    })
+
     it('throws when there are no containers', () => {
       const manifest = {
         apiVersion: 'run.googleapis.com/v1',

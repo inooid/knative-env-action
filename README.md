@@ -21,13 +21,9 @@ manage. This GitHub Action should help relieve some of the pains by:
 name: Deploy
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
   push:
     branches:
       - main
-  # Replace pull_request with pull_request_target if you
-  # plan to use this action with forks, see the Limitations section
   pull_request:
     branches:
       - main
@@ -46,7 +42,6 @@ jobs:
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./deploy/production-app.yaml
-          target: my-container-name
           env_file: ./deploy/production.env
           output: /tmp/production-app.yaml
 
@@ -136,13 +131,9 @@ MAIL_FROM_ADDRESS=from@example.com
 name: Deploy
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
   push:
     branches:
       - main
-  # Replace pull_request with pull_request_target if you
-  # plan to use this action with forks, see the Limitations section
   pull_request:
     branches:
       - main
@@ -161,7 +152,6 @@ jobs:
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./app.yaml
-          target: my-test-app
           env_file: ./production.env
           output: /tmp/production-app.yaml
 
@@ -176,7 +166,6 @@ jobs:
         uses: inooid/knative-env-action@0.1.0
         with:
           input: ./scheduler.yaml
-          target: my-test-schedulder
           env_file: ./production.env
           output: /tmp/production-scheduler.yaml
 
@@ -216,13 +205,9 @@ spec:
 name: Deploy
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
   push:
     branches:
       - main
-  # Replace pull_request with pull_request_target if you
-  # plan to use this action with forks, see the Limitations section
   pull_request:
     branches:
       - main
@@ -246,7 +231,75 @@ jobs:
           APP_IMAGE: ${{ vars.APP_IMAGE }}
         with:
           input: ./app.yaml
-          target: ${{ vars.APP_NAME }}
+          env_file: ./production.env
+          output: /tmp/production-app.yaml
+
+      # Example of actually deploying the cloud run app
+      - name: Deploy app to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          region: ${{ vars.APP_LOCATION }}
+          metadata: /tmp/production-app.yaml
+```
+
+### Multi container apps
+
+<details>
+  <summary>`app.yaml`</summary>
+
+```yaml
+# app.yaml
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: my-test-app
+  labels:
+    cloud.googleapis.com/location: ${APP_LOCATION}
+spec:
+  template:
+    spec:
+      containers:
+        # Nginx container
+        - name: nginx
+          image: nginx
+          ports:
+            - name: http1
+              containerPort: 8080
+
+        # Application container
+        - name: my-test-app
+          image: my-image
+          env:
+            - name: PORT
+              value: '8888'
+```
+
+```yml
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ... all your google auth steps here
+
+      - name: Generate app declaration
+        uses: inooid/knative-env-action@0.1.0
+        with:
+          input: ./app.yaml
+          container_name: my-test-app
           env_file: ./production.env
           output: /tmp/production-app.yaml
 
@@ -264,12 +317,12 @@ jobs:
 
 The following inputs can be used as `step.with` keys:
 
-| Name       | Type     | Required? | Description                                                               |
-| ---------- | -------- | --------- | ------------------------------------------------------------------------- |
-| `input`    | `String` | Yes       | The input path of the knative YAML file (e.g. `./app.yaml`)               |
-| `target`   | `String` | Yes       | The name of the target container                                          |
-| `env_file` | `String` | Yes       | The path to the `.env` file                                               |
-| `output`   | `String` | Yes       | The output path of the generated knative YAML file (e.g. `/tmp/app.yaml`) |
+| Name             | Type     | Required? | Description                                                               |
+| ---------------- | -------- | --------- | ------------------------------------------------------------------------- |
+| `input`          | `String` | Yes       | The input path of the knative YAML file (e.g. `./app.yaml`)               |
+| `env_file`       | `String` | Yes       | The path to the `.env` file                                               |
+| `output`         | `String` | Yes       | The output path of the generated knative YAML file (e.g. `/tmp/app.yaml`) |
+| `container_name` | `String` | No        | The name of the target container, by default we take the first container  |
 
 ### outputs
 

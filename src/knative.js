@@ -5,12 +5,13 @@ const { envsubst } = require('./env')
 /**
  * Reads the given knative manifest and replaces the given env vars.
  * @param {string} filePath
+ * @param {object} [env]
  * @returns {object}
  */
-async function readManifest(filePath) {
+async function readManifest(filePath, env) {
   const file = await fs.readFile(filePath, { encoding: 'utf8' })
 
-  return YAML.parse(envsubst(file))
+  return YAML.parse(envsubst(file, env))
 }
 
 /**
@@ -72,9 +73,15 @@ function updateContainer(manifest, containerName, transformator) {
  */
 function updateServiceContainer(manifest, containerName, transformator) {
   const containers = manifest.spec?.template?.spec?.containers ?? []
-  const index = containers.findIndex(
-    container => container?.name === containerName
-  )
+
+  if (containers.length === 0) {
+    throw new Error(`No containers found in 'spec.template.spec.containers'`)
+  }
+
+  // Use the first container when no explicit container is specified.
+  const index = containerName
+    ? containers.findIndex(container => container?.name === containerName)
+    : 0
 
   if (index === -1) {
     throw new Error(
@@ -99,9 +106,17 @@ function updateServiceContainer(manifest, containerName, transformator) {
 function updateJobContainer(manifest, containerName, transformator) {
   const containers =
     manifest.spec?.template?.spec?.template?.spec?.containers ?? []
-  const index = containers.findIndex(
-    container => container?.name === containerName
-  )
+
+  if (containers.length === 0) {
+    throw new Error(
+      `No containers found in 'spec.template.spec.template.spec.containers'`
+    )
+  }
+
+  // Use the first container when no explicit container is specified.
+  const index = containerName
+    ? containers.findIndex(container => container?.name === containerName)
+    : 0
 
   if (index === -1) {
     throw new Error(

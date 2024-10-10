@@ -8,10 +8,9 @@ const fs = require('node:fs/promises')
 const YAML = require('yaml')
 const main = require('../src/main')
 
-const infoMock = jest.spyOn(core, 'info').mockImplementation()
+jest.spyOn(core, 'info').mockImplementation()
 const getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
 const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
-const setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
 const runMock = jest.spyOn(main, 'run')
 
 const MOCKS = {
@@ -34,8 +33,6 @@ describe('action', () => {
         switch (name) {
           case 'input':
             return MOCKS.serviceManifest
-          case 'target':
-            return 'my-test-app'
           case 'env_file':
             return MOCKS.envFile
           case 'output':
@@ -113,8 +110,6 @@ describe('action', () => {
         switch (name) {
           case 'input':
             return MOCKS.jobManifest
-          case 'target':
-            return 'my-test-job'
           case 'env_file':
             return MOCKS.envFile
           case 'output':
@@ -208,8 +203,6 @@ describe('action', () => {
         switch (name) {
           case 'input':
             return MOCKS.serviceManifest
-          case 'target':
-            return 'my-test-app'
           case 'env_file':
             return path.join(__dirname, '__mocks__', 'test-with-env.env')
           case 'output':
@@ -275,8 +268,6 @@ describe('action', () => {
       switch (name) {
         case 'input':
           return 'unknown-file.yaml'
-        case 'target':
-          return 'my-test-app'
         case 'env_file':
           return MOCKS.envFile
         default:
@@ -298,8 +289,6 @@ describe('action', () => {
       switch (name) {
         case 'input':
           return MOCKS.serviceManifest
-        case 'target':
-          return 'unknown'
         case 'env_file':
           return 'unknown.env'
         default:
@@ -321,7 +310,7 @@ describe('action', () => {
       switch (name) {
         case 'input':
           return MOCKS.serviceManifest
-        case 'target':
+        case 'container_name':
           return 'unknown'
         case 'env_file':
           return MOCKS.envFile
@@ -339,7 +328,7 @@ describe('action', () => {
     )
   })
 
-  const requiredFields = ['input', 'target', 'env_file', 'output']
+  const requiredFields = ['input', 'env_file', 'output']
 
   for (const field of requiredFields) {
     it(`fails if no '${field}' is provided`, async () => {

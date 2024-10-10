@@ -3113,7 +3113,7 @@ async function parse(filePath) {
  * - Any fallbacks ${NOTSET:=$BAR}
  * - Escaping using $$
  * @param {string} input
- * @param {object} env
+ * @param {object} [env]
  * @returns {string}
  */
 function envsubst(input, env = process.env) {
@@ -3155,12 +3155,13 @@ const { envsubst } = __nccwpck_require__(4521)
 /**
  * Reads the given knative manifest and replaces the given env vars.
  * @param {string} filePath
+ * @param {object} [env]
  * @returns {object}
  */
-async function readManifest(filePath) {
+async function readManifest(filePath, env) {
   const file = await fs.readFile(filePath, { encoding: 'utf8' })
 
-  return YAML.parse(envsubst(file))
+  return YAML.parse(envsubst(file, env))
 }
 
 /**
@@ -3222,9 +3223,15 @@ function updateContainer(manifest, containerName, transformator) {
  */
 function updateServiceContainer(manifest, containerName, transformator) {
   const containers = manifest.spec?.template?.spec?.containers ?? []
-  const index = containers.findIndex(
-    container => container?.name === containerName
-  )
+
+  if (containers.length === 0) {
+    throw new Error(`No containers found in 'spec.template.spec.containers'`)
+  }
+
+  // Use the first container when no explicit container is specified.
+  const index = containerName
+    ? containers.findIndex(container => container?.name === containerName)
+    : 0
 
   if (index === -1) {
     throw new Error(
@@ -3249,9 +3256,17 @@ function updateServiceContainer(manifest, containerName, transformator) {
 function updateJobContainer(manifest, containerName, transformator) {
   const containers =
     manifest.spec?.template?.spec?.template?.spec?.containers ?? []
-  const index = containers.findIndex(
-    container => container?.name === containerName
-  )
+
+  if (containers.length === 0) {
+    throw new Error(
+      `No containers found in 'spec.template.spec.template.spec.containers'`
+    )
+  }
+
+  // Use the first container when no explicit container is specified.
+  const index = containerName
+    ? containers.findIndex(container => container?.name === containerName)
+    : 0
 
   if (index === -1) {
     throw new Error(
@@ -3292,9 +3307,9 @@ const environment = __nccwpck_require__(4521)
 async function run() {
   try {
     const inputFile = core.getInput('input', { required: true })
-    const target = core.getInput('target', { required: true })
     const envFile = core.getInput('env_file', { required: true })
     const outputFile = core.getInput('output', { required: true })
+    const containerName = core.getInput('container_name')
 
     const [manifest, env] = await Promise.all([
       knative.readManifest(inputFile),
@@ -3303,7 +3318,7 @@ async function run() {
 
     const updatedManifest = knative.updateContainer(
       manifest,
-      target,
+      containerName,
       container => knative.addEnvToContainer(container, env)
     )
 

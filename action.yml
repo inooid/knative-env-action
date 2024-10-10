@@ -8,10 +8,6 @@ inputs:
     description: 'The input knative yaml file'
     required: true
 
-  target:
-    description: 'The container name that will receive the env var'
-    required: true
-
   env_file:
     description: 'The .env file'
     required: true
@@ -19,6 +15,9 @@ inputs:
   output:
     description: 'The output file path'
     required: true
+
+  container_name:
+    description: 'The container name that will receive the env var'
 
 runs:
   using: node20

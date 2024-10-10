@@ -9,9 +9,9 @@ const environment = require('./env')
 async function run() {
   try {
     const inputFile = core.getInput('input', { required: true })
-    const target = core.getInput('target', { required: true })
     const envFile = core.getInput('env_file', { required: true })
     const outputFile = core.getInput('output', { required: true })
+    const containerName = core.getInput('container_name')
 
     const [manifest, env] = await Promise.all([
       knative.readManifest(inputFile),
@@ -20,7 +20,7 @@ async function run() {
 
     const updatedManifest = knative.updateContainer(
       manifest,
-      target,
+      containerName,
       container => knative.addEnvToContainer(container, env)
     )
 

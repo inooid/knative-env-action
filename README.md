@@ -266,10 +266,10 @@ The following inputs can be used as `step.with` keys:
 
 | Name       | Type     | Required? | Description                                                               |
 | ---------- | -------- | --------- | ------------------------------------------------------------------------- |
-| `input`    | `String` | Yes       | The input path of the knative yaml file (e.g. `./app.yaml`)               |
+| `input`    | `String` | Yes       | The input path of the knative YAML file (e.g. `./app.yaml`)               |
 | `target`   | `String` | Yes       | The name of the target container                                          |
 | `env_file` | `String` | Yes       | The path to the `.env` file                                               |
-| `output`   | `String` | Yes       | The output path of the generated knative yaml file (e.g. `/tmp/app.yaml`) |
+| `output`   | `String` | Yes       | The output path of the generated knative YAML file (e.g. `/tmp/app.yaml`) |
 
 ### outputs
 

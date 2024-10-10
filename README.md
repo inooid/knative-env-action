@@ -1,7 +1,7 @@
 # ✨ Knative/Cloud Run .env Action
 
 Deploying multiple apps with shared environment variables can be tedious to
-manage. This GitHub action should help relieve some of the pains by:
+manage. This GitHub Action should help relieve some of the pains by:
 
 - Easily managing env variables using `.env` files
 - Substitutes environment variables used within the manifest
@@ -242,7 +242,8 @@ jobs:
         env:
           APP_NAME: ${{ vars.APP_NAME }}
           APP_LOCATION: ${{ vars.APP_LOCATION }}
-          APP_IMAGE: ${{ vars.APP_IMAGE }} # Could be the output from the image build step
+          # Could be the output from the image build step
+          APP_IMAGE: ${{ vars.APP_IMAGE }}
         with:
           input: ./app.yaml
           target: ${{ vars.APP_NAME }}

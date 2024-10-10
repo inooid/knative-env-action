@@ -40,7 +40,7 @@ jobs:
 
       - name: Generate service declaration
         id: app_manifest
-        uses: inooid/knative-env-action@0.1.0
+        uses: inooid/knative-env-action@v0.1.0
         with:
           input: ./deploy/production-app.yaml
           env_file: ./deploy/production.env
@@ -150,27 +150,25 @@ jobs:
 
       - name: Generate app declaration
         id: app_manifest
-        uses: inooid/knative-env-action@0.1.0
+        uses: inooid/knative-env-action@v0.1.0
         with:
           input: ./app.yaml
           env_file: ./production.env
 
-      # Example of actually deploying the cloud run app
+      - name: Generate job declaration
+        id: scheduler_manifest
+        uses: inooid/knative-env-action@v0.1.0
+        with:
+          input: ./scheduler.yaml
+          env_file: ./production.env
+
       - name: Deploy app to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: us-east1
           metadata: ${{ steps.app_manifest.outputs.output }}
 
-      - name: Generate job declaration
-        id: scheduler_manifest
-        uses: inooid/knative-env-action@0.1.0
-        with:
-          input: ./scheduler.yaml
-          env_file: ./production.env
-
-      # Example of actually deploying the cloud run app
-      - name: Deploy app to Cloud Run
+      - name: Deploy scheduler to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: us-east1
@@ -201,6 +199,8 @@ spec:
               containerPort: 8080
 ```
 
+</details>
+
 ```yml
 name: Deploy
 
@@ -224,7 +224,7 @@ jobs:
 
       - name: Generate app declaration
         id: app-manifest
-        uses: inooid/knative-env-action@0.1.0
+        uses: inooid/knative-env-action@v0.1.0
         env:
           APP_NAME: ${{ vars.APP_NAME }}
           APP_LOCATION: ${{ vars.APP_LOCATION }}
@@ -274,6 +274,8 @@ spec:
               value: '8888'
 ```
 
+</details>
+
 ```yml
 name: Deploy
 
@@ -297,7 +299,7 @@ jobs:
 
       - name: Generate app declaration
         id: app_manifest
-        uses: inooid/knative-env-action@0.1.0
+        uses: inooid/knative-env-action@v0.1.0
         with:
           input: ./app.yaml
           container_name: my-test-app

@@ -155,13 +155,6 @@ jobs:
           input: ./app.yaml
           env_file: ./production.env
 
-      # Example of actually deploying the cloud run app
-      - name: Deploy app to Cloud Run
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          region: us-east1
-          metadata: ${{ steps.app_manifest.outputs.output }}
-
       - name: Generate job declaration
         id: scheduler_manifest
         uses: inooid/knative-env-action@v0.1.0
@@ -169,8 +162,13 @@ jobs:
           input: ./scheduler.yaml
           env_file: ./production.env
 
-      # Example of actually deploying the cloud run app
       - name: Deploy app to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          region: us-east1
+          metadata: ${{ steps.app_manifest.outputs.output }}
+
+      - name: Deploy scheduler to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           region: us-east1

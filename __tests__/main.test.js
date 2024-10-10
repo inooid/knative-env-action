@@ -185,6 +185,91 @@ describe('action', () => {
     })
   })
 
+  describe('env vars', () => {
+    let envBefore
+
+    beforeEach(() => {
+      envBefore = process.env
+
+      process.env.MANIFEST_LOCATION = 'asia-east2'
+      process.env.MANIFEST_SERVICE_ACCOUNT = 'service@example.org'
+      process.env.MANIFEST_IMAGE = 'my-image:lts'
+      process.env.MANIFEST_INJECTED_VARIABLE = 'foobar'
+    })
+
+    afterEach(() => {
+      process.env = envBefore
+    })
+
+    it('should replace all env vars before parsing', async () => {
+      const outputFile = path.join(MOCKS.tmpDir, `service-${Date.now()}.yaml`)
+
+      getInputMock.mockImplementation(name => {
+        switch (name) {
+          case 'input':
+            return MOCKS.serviceManifest
+          case 'target':
+            return 'my-test-app'
+          case 'env_file':
+            return path.join(__dirname, '__mocks__', 'test-with-env.env')
+          case 'output':
+            return outputFile
+          default:
+            return ''
+        }
+      })
+
+      await main.run()
+
+      expect(runMock).toHaveReturned()
+      expect(setFailedMock).not.toHaveBeenCalled()
+
+      const newManifest = YAML.parse(
+        await fs.readFile(outputFile, {
+          encoding: 'utf8'
+        })
+      )
+
+      const container = newManifest.spec.template.spec.containers[0]
+
+      // Location label
+      expect(
+        newManifest.metadata.labels['cloud.googleapis.com/location']
+      ).not.toBe('${MANIFEST_LOCATION}')
+      expect(newManifest.metadata.labels['cloud.googleapis.com/location']).toBe(
+        'asia-east2'
+      )
+
+      // Service account
+      expect(newManifest.spec.template.spec.serviceAccountName).not.toBe(
+        '${MANIFEST_SERVICE_ACCOUNT}'
+      )
+      expect(newManifest.spec.template.spec.serviceAccountName).toBe(
+        'service@example.org'
+      )
+
+      // Env var
+      expect(container.env).toContainEqual({
+        name: 'MY_APP_INJECTED_VARIABLE',
+        value: 'foobar'
+      })
+
+      // Leaves env vars from env_file intact
+      expect(container.env).toContainEqual({
+        name: 'ANOTHER_ENV',
+        value: 'foobar'
+      })
+      expect(container.env).toContainEqual({
+        name: 'ENV_WITH_BRACKETS',
+        value: '${ANOTHER_ENV}'
+      })
+      expect(container.env).toContainEqual({
+        name: 'ENV_WITH_DOLLAR_SIGN',
+        value: '$ANOTHER_ENV'
+      })
+    })
+  })
+
   it('sets a failed status when manifest reading fails', async () => {
     getInputMock.mockImplementation(name => {
       switch (name) {

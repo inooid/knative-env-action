@@ -1,14 +1,16 @@
 const fs = require('node:fs/promises')
 const YAML = require('yaml')
+const { envsubst } = require('./env')
 
 /**
+ * Reads the given knative manifest and replaces the given env vars.
  * @param {string} filePath
  * @returns {object}
  */
 async function readManifest(filePath) {
   const file = await fs.readFile(filePath, { encoding: 'utf8' })
 
-  return YAML.parse(file)
+  return YAML.parse(envsubst(file))
 }
 
 /**

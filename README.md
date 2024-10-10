@@ -326,7 +326,9 @@ The following inputs can be used as `step.with` keys:
 
 ### outputs
 
-There are currently no outputs available
+| Name     | Type     | Description                                                                      |
+| -------- | -------- | -------------------------------------------------------------------------------- |
+| `output` | `String` | The output path to the newly generated manifest YAML file (e.g. `/tmp/app.yaml`) |
 
 ## Contributing
 

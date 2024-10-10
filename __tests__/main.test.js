@@ -11,13 +11,13 @@ const main = require('../src/main')
 jest.spyOn(core, 'info').mockImplementation()
 const getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
 const setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
+const setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
 const runMock = jest.spyOn(main, 'run')
 
 const MOCKS = {
   serviceManifest: path.join(__dirname, '__mocks__', 'service.yaml'),
   jobManifest: path.join(__dirname, '__mocks__', 'job.yaml'),
-  envFile: path.join(__dirname, '__mocks__', 'test.env'),
-  tmpDir: path.join(os.tmpdir())
+  envFile: path.join(__dirname, '__mocks__', 'test.env')
 }
 
 describe('action', () => {
@@ -27,16 +27,12 @@ describe('action', () => {
 
   describe('for Service type', () => {
     it('writes a new manifest file as output', async () => {
-      const outputFile = path.join(MOCKS.tmpDir, `service-${Date.now()}.yaml`)
-
       getInputMock.mockImplementation(name => {
         switch (name) {
           case 'input':
             return MOCKS.serviceManifest
           case 'env_file':
             return MOCKS.envFile
-          case 'output':
-            return outputFile
           default:
             return ''
         }
@@ -46,6 +42,13 @@ describe('action', () => {
 
       expect(runMock).toHaveReturned()
       expect(setFailedMock).not.toHaveBeenCalled()
+      expect(setOutputMock).toHaveBeenNthCalledWith(
+        1,
+        'output',
+        expect.any(String)
+      )
+
+      const outputFile = setOutputMock.mock.calls[0][1]
 
       const newManifest = YAML.parse(
         await fs.readFile(outputFile, {
@@ -100,16 +103,14 @@ describe('action', () => {
         })
       }
     })
-  })
 
-  describe('for Job type', () => {
-    it('writes a new manifest file as output', async () => {
-      const outputFile = path.join(MOCKS.tmpDir, `job-${Date.now()}.yaml`)
+    it('allows for passing `output` input', async () => {
+      const outputFile = path.join(os.tmpdir(), `service-${Date.now()}.yaml`)
 
       getInputMock.mockImplementation(name => {
         switch (name) {
           case 'input':
-            return MOCKS.jobManifest
+            return MOCKS.serviceManifest
           case 'env_file':
             return MOCKS.envFile
           case 'output':
@@ -123,6 +124,36 @@ describe('action', () => {
 
       expect(runMock).toHaveReturned()
       expect(setFailedMock).not.toHaveBeenCalled()
+
+      // Check if the file exists
+      expect(await fs.stat(outputFile)).not.toBeNull()
+    })
+  })
+
+  describe('for Job type', () => {
+    it('writes a new manifest file as output', async () => {
+      getInputMock.mockImplementation(name => {
+        switch (name) {
+          case 'input':
+            return MOCKS.jobManifest
+          case 'env_file':
+            return MOCKS.envFile
+          default:
+            return ''
+        }
+      })
+
+      await main.run()
+
+      expect(runMock).toHaveReturned()
+      expect(setFailedMock).not.toHaveBeenCalled()
+      expect(setOutputMock).toHaveBeenNthCalledWith(
+        1,
+        'output',
+        expect.any(String)
+      )
+
+      const outputFile = setOutputMock.mock.calls[0][1]
 
       const newManifest = YAML.parse(
         await fs.readFile(outputFile, {
@@ -178,6 +209,31 @@ describe('action', () => {
         })
       }
     })
+
+    it('allows for passing `output` input', async () => {
+      const outputFile = path.join(os.tmpdir(), `job-${Date.now()}.yaml`)
+
+      getInputMock.mockImplementation(name => {
+        switch (name) {
+          case 'input':
+            return MOCKS.jobManifest
+          case 'env_file':
+            return MOCKS.envFile
+          case 'output':
+            return outputFile
+          default:
+            return ''
+        }
+      })
+
+      await main.run()
+
+      expect(runMock).toHaveReturned()
+      expect(setFailedMock).not.toHaveBeenCalled()
+
+      // Check if the file exists
+      expect(() => fs.stat(outputFile)).not.toThrow()
+    })
   })
 
   describe('env vars', () => {
@@ -197,16 +253,12 @@ describe('action', () => {
     })
 
     it('should replace all env vars before parsing', async () => {
-      const outputFile = path.join(MOCKS.tmpDir, `service-${Date.now()}.yaml`)
-
       getInputMock.mockImplementation(name => {
         switch (name) {
           case 'input':
             return MOCKS.serviceManifest
           case 'env_file':
             return path.join(__dirname, '__mocks__', 'test-with-env.env')
-          case 'output':
-            return outputFile
           default:
             return ''
         }
@@ -216,6 +268,13 @@ describe('action', () => {
 
       expect(runMock).toHaveReturned()
       expect(setFailedMock).not.toHaveBeenCalled()
+      expect(setOutputMock).toHaveBeenNthCalledWith(
+        1,
+        'output',
+        expect.any(String)
+      )
+
+      const outputFile = setOutputMock.mock.calls[0][1]
 
       const newManifest = YAML.parse(
         await fs.readFile(outputFile, {

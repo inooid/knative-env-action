@@ -201,6 +201,8 @@ spec:
               containerPort: 8080
 ```
 
+</details>
+
 ```yml
 name: Deploy
 
@@ -273,6 +275,8 @@ spec:
             - name: PORT
               value: '8888'
 ```
+
+</details>
 
 ```yml
 name: Deploy

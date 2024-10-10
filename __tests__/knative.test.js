@@ -20,7 +20,7 @@ describe('updateContainer()', () => {
           metadata: {
             annotations: {
               'run.googleapis.com/network-interfaces':
-                '[{"network":"projects/kumina-hedge/global/networks/k8s-hedge-kumina-net","subnetwork":"projects/kumina-hedge/regions/us-east1/subnetworks/us-east1-k8s-hedge-kumina-net"}]',
+                '[{"network":"projects/my-test-project/global/networks/my-test-network","subnetwork":"projects/my-test-project/regions/us-east1/subnetworks/us-east1-my-test-network"}]',
               'run.googleapis.com/vpc-access-egress': 'all-traffic'
             }
           },
@@ -61,7 +61,7 @@ describe('updateContainer()', () => {
           metadata: {
             annotations: {
               'run.googleapis.com/network-interfaces':
-                '[{"network":"projects/kumina-hedge/global/networks/k8s-hedge-kumina-net","subnetwork":"projects/kumina-hedge/regions/us-east1/subnetworks/us-east1-k8s-hedge-kumina-net"}]',
+                '[{"network":"projects/my-test-project/global/networks/my-test-network","subnetwork":"projects/my-test-project/regions/us-east1/subnetworks/us-east1-my-test-network"}]',
               'run.googleapis.com/vpc-access-egress': 'all-traffic'
             }
           },

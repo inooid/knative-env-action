@@ -44,9 +44,15 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
+  test-service-action:
+    name: GitHub Actions Test with kind Service
     runs-on: ubuntu-latest
+
+    env:
+      MANIFEST_LOCATION: us-east1
+      MANIFEST_SERVICE_ACCOUNT: my-fake-service-account@example.org
+      MANIFEST_IMAGE: node:lts
+      MANIFEST_INJECTED_VARIABLE: bar
 
     steps:
       - name: Checkout
@@ -70,3 +76,36 @@ jobs:
           fi
 
           cat /tmp/service.yaml
+
+  test-job-action:
+    name: GitHub Actions Test with kind Job
+    runs-on: ubuntu-latest
+
+    env:
+      MANIFEST_LOCATION: eu-west4
+      MANIFEST_SERVICE_ACCOUNT: my-fake-service-account@example.org
+      MANIFEST_IMAGE: node:lts
+      MANIFEST_INJECTED_VARIABLE: baz
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Test Local Action
+        id: test-action
+        uses: ./
+        with:
+          input: ./__tests__/__mocks__/job.yaml
+          target: my-test-job
+          env_file: ./__tests__/__mocks__/test.env
+          output: /tmp/job.yaml
+
+      - name: Test if new manifest exists
+        run: |
+          if [ ! -f /tmp/job.yaml ]; then
+            echo "File not found!"
+            exit 1
+          fi
+
+          cat /tmp/job.yaml

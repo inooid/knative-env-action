@@ -64,7 +64,6 @@ jobs:
         uses: ./
         with:
           input: ./__tests__/__mocks__/service.yaml
-          target: my-test-app
           env_file: ./__tests__/__mocks__/test.env
           output: /tmp/service.yaml
 
@@ -97,7 +96,6 @@ jobs:
         uses: ./
         with:
           input: ./__tests__/__mocks__/job.yaml
-          target: my-test-job
           env_file: ./__tests__/__mocks__/test.env
           output: /tmp/job.yaml
 

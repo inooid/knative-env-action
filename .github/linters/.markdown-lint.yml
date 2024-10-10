@@ -16,3 +16,6 @@ MD030:
 # Code block style
 MD046:
   style: fenced
+
+MD033:
+  allowed_elements: [details, summary]
